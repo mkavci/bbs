@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ürünler | BBS AUTO</title>
+<link rel="icon" href="image/bbslogo.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="urunler">
+<div id="hdr"></div>
+<main><section><div class="wrap">
+  <div class="head"><h2>Tüm Ürünler</h2><p>Online satış yoktur; fiyat ve stok bilgisi içindir.</p></div>
+  <div class="tools">
+    <input id="q" type="search" placeholder="Ürün ara..." aria-label="Ürün ara">
+    <select id="cat" aria-label="Kategori"><option value="">Tüm kategoriler</option></select>
+    <select id="stk" aria-label="Stok"><option value="">Tüm stok durumları</option><option value="var">Stokta</option><option value="sinirli">Sınırlı stok</option><option value="yok">Tükendi</option></select>
+    <select id="srt" aria-label="Sırala"><option value="yeni">En yeni</option><option value="az">Ada göre</option><option value="ar">Fiyat: düşükten yükseğe</option><option value="az2">Fiyat: yüksekten düşüğe</option></select>
+  </div>
+  <p class="count" id="count"></p>
+  <div class="grid" id="products"></div>
+</div></section></main>
+<div id="ftr"></div>
+<dialog id="dlg"></dialog>
+<script src="js/config.js"></script>
+<script src="js/common.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

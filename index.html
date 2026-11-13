@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BBS AUTO | Oto Servis</title>
+<meta name="description" content="Yağ değişimi, motor, fren, lastik ve akü servisi; yedek parça detay ve fiyat bilgisi.">
+<link rel="icon" href="image/bbslogo.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="home">
+<div id="hdr"></div>
+<main>
+<div id="slider" class="slider" aria-roledescription="carousel" aria-label="Öne çıkanlar"></div>
+
+<section id="neler" class="hl"><div class="wrap hl-in">
+  <div><h2 id="hl-t"></h2><p id="hl-p"></p><a class="btn light sm" id="hl-b" href="#iletisim"></a></div>
+  <ul class="stats" id="stats"></ul>
+</div></section>
+
+<section id="hizmetler"><div class="wrap">
+  <div class="head"><h2 data-set="sec_svc_title"></h2><p data-set="sec_svc_text"></p></div>
+  <ul class="svc" id="services"></ul>
+  <div class="more"><a class="btn" id="svc-more" href="hizmetler.html">TÜM HİZMETLER</a></div>
+</div></section>
+
+<section id="urunler" class="alt"><div class="wrap">
+  <div class="head"><h2 data-set="sec_prod_title"></h2><p data-set="sec_prod_text"></p></div>
+  <div class="grid g4" id="products"></div>
+  <div class="more"><a class="btn" id="prod-more" href="urunler.html">TÜM ÜRÜNLERİ GÖR</a></div>
+</div></section>
+
+<section id="haberler"><div class="wrap">
+  <div class="head"><h2 data-set="sec_news_title"></h2><p data-set="sec_news_text"></p></div>
+  <div class="grid g4" id="posts"></div>
+  <div class="more"><a class="btn" id="news-more" href="haberler.html">TÜM HABERLER</a></div>
+</div></section>
+
+<section id="iletisim" class="alt" style="border-top:1px solid var(--line)"><div class="wrap contact">
+  <div>
+    <div class="head"><h2 data-set="sec_contact_title"></h2></div>
+    <form id="form">
+      <label>Ad Soyad<input name="name" required maxlength="80"></label>
+      <label>Telefon<input name="phone" type="tel" maxlength="30"></label>
+      <label>E-posta<input name="email" type="email" maxlength="100"></label>
+      <label>Mesajınız<textarea name="message" required maxlength="1000"></textarea></label>
+      <button class="btn" type="submit">GÖNDER</button>
+      <p class="msg" id="msg" role="status"></p>
+    </form>
+  </div>
+  <div>
+    <div class="head"><h2 data-set="sec_find_title"></h2></div>
+    <dl class="info" id="info"></dl>
+    <div class="map" id="map"></div>
+  </div>
+</div></section>
+</main>
+<div id="ftr"></div>
+<dialog id="dlg"></dialog>
+<script src="js/config.js"></script>
+<script src="js/common.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
