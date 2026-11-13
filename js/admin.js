@@ -19,19 +19,17 @@ const T = {
 };
 const CNT = n => [4, 6, 8, 10, 12, 16, 20].map(x => [String(x), x + " " + n]);
 const BGS = [["solid", "Düz renk"], ["linear", "Gradyan"], ["radial", "Radyal"]];
-const HINT = "Okunmayan bir renk seçerseniz site o alanı otomatik olarak okunur bir renge çevirir.";
-// [başlık, alanlar, sıfırlanabilir mi, açıklama]
-const G = [
-  ["Genel", [["site_title", "Site başlığı", "text"], ["tagline", "Slogan", "text"], ["logo_url", "Logo", "image"], ["announcement", "Duyuru çubuğu (boşsa görünmez)", "text"], ["footer_text", "Alt bilgi yazısı", "text"], ["currency", "Para birimi (€, ₺, $)", "text"]]],
-  ["Ortak renkler", [["color_primary", "Ana renk (buton, kırmızı alan, vurgular)", "color"], ["color_hero", "Slider yazı rengi", "color"]], true],
-  ["Gündüz modu", [["bg_style", "Arka plan türü", "select", BGS], ["color_bg", "Arka plan rengi 1", "color"], ["color_bg2", "Arka plan rengi 2 (gradyan/radyal)", "color"], ["color_card", "Kart ve popup arka planı", "color"], ["color_text", "Yazı rengi", "color"], ["color_heading", "Başlık rengi", "color"]], true, HINT],
-  ["Gece modu", [["dark_bg_style", "Arka plan türü", "select", BGS], ["dark_color_bg", "Arka plan rengi 1", "color"], ["dark_color_bg2", "Arka plan rengi 2 (gradyan/radyal)", "color"], ["dark_color_card", "Kart ve popup arka planı", "color"], ["dark_color_text", "Yazı rengi", "color"], ["dark_color_heading", "Başlık rengi", "color"]], true, HINT],
-  ["Yazı tipi ve boyut", [["font_head", "Başlık yazı tipi (bölüm ve kart başlıkları)", "select", B.FONTS], ["font_hero", "Büyük başlık yazı tipi (slider, Neler yapıyoruz)", "select", B.FONTS], ["font_body", "Metin yazı tipi", "select", B.FONTS], ["font_size", "Genel boyut (px) — her şeyi büyütür/küçültür", "range", [13, 22]], ["head_size", "Başlık boyutu (%)", "range", [70, 140]]], true],
-  ["Anasayfa bölümleri", [["svc_limit", "Anasayfada gösterilecek hizmet sayısı", "select", CNT("hizmet")], ["prod_limit", "Anasayfada gösterilecek ürün sayısı", "select", CNT("ürün")], ["news_limit", "Anasayfada gösterilecek haber sayısı", "select", CNT("haber")], ["sec_svc_title", "Hizmetler başlığı", "text"], ["sec_svc_text", "Hizmetler alt yazısı", "text"], ["sec_prod_title", "Ürünler başlığı", "text"], ["sec_prod_text", "Ürünler alt yazısı", "text"], ["sec_news_title", "Haberler başlığı", "text"], ["sec_news_text", "Haberler alt yazısı", "text"], ["sec_contact_title", "Mesaj formu başlığı", "text"], ["sec_find_title", "İletişim bilgisi başlığı", "text"]]],
-  ["Anasayfa: Neler yapıyoruz", [["hl_title", "Başlık", "text"], ["hl_text", "Açıklama", "area"], ["hl_btn_text", "Buton yazısı", "text"], ["hl_btn_link", "Buton bağlantısı", "text"], ["stat1_num", "1. sayı (örn 10+)", "text"], ["stat1_label", "1. etiket", "text"], ["stat2_num", "2. sayı", "text"], ["stat2_label", "2. etiket", "text"], ["stat3_num", "3. sayı", "text"], ["stat3_label", "3. etiket", "text"]]],
-  ["İletişim ve harita", [["phone", "Telefon", "text"], ["email", "E-posta", "text"], ["hours", "Çalışma saatleri", "text"], ["address", "Adres", "area"], ["map_lat", "Enlem (Google Haritalar'da konuma sağ tıklayıp kopyalayın)", "text"], ["map_lng", "Boylam", "text"], ["whatsapp", "WhatsApp numarası (ülke koduyla, örn 905551112233)", "text"]]],
-  ["Sosyal medya", [["facebook", "Facebook adresi (https://...)", "text"], ["instagram", "Instagram adresi (https://...)", "text"]]]
+// Sekmeler: [id, başlık, [[fieldset başlığı, alanlar]]]; "renk" sekmesi ayrıca özel çizilir
+const TABS = [
+  ["genel", "Genel", [["Site bilgileri", [["site_title", "Site başlığı", "text"], ["tagline", "Slogan", "text"], ["logo_url", "Logo", "image"], ["announcement", "Duyuru çubuğu (boşsa görünmez)", "text"], ["footer_text", "Alt bilgi yazısı", "text"], ["currency", "Para birimi (€, ₺, $)", "text"]]]]],
+  ["renk", "Renk paletleri", []],
+  ["yazi", "Yazı tipi ve boyut", [["Yazı tipleri", [["font_head", "Bölüm başlıkları", "select", B.FONTS], ["font_card", "Kart, popup ve hizmet başlıkları (ürün adı, fiyat dahil)", "select", B.FONTS], ["font_hero", "Büyük başlıklar (slider, Neler yapıyoruz, sayılar)", "select", B.FONTS], ["font_btn", "Butonlar", "select", B.FONTS], ["font_body", "Genel metin", "select", B.FONTS]]], ["Boyut", [["font_size", "Genel boyut (px) — tüm site büyür/küçülür", "range", [13, 22]], ["head_size", "Başlık boyutu (%)", "range", [70, 140]]]]]],
+  ["ana", "Anasayfa", [["Kaç tane gösterilsin?", [["svc_limit", "Hizmet sayısı", "select", CNT("hizmet")], ["prod_limit", "Ürün sayısı", "select", CNT("ürün")], ["news_limit", "Haber sayısı", "select", CNT("haber")]]], ["Bölüm başlıkları", [["sec_svc_title", "Hizmetler başlığı", "text"], ["sec_svc_text", "Hizmetler alt yazısı", "text"], ["sec_prod_title", "Ürünler başlığı", "text"], ["sec_prod_text", "Ürünler alt yazısı", "text"], ["sec_news_title", "Haberler başlığı", "text"], ["sec_news_text", "Haberler alt yazısı", "text"], ["sec_contact_title", "Mesaj formu başlığı", "text"], ["sec_find_title", "İletişim bilgisi başlığı", "text"]]], ["Neler yapıyoruz bandı", [["hl_title", "Başlık", "text"], ["hl_text", "Açıklama", "area"], ["hl_btn_text", "Buton yazısı", "text"], ["hl_btn_link", "Buton bağlantısı", "text"], ["stat1_num", "1. sayı (örn 10+)", "text"], ["stat1_label", "1. etiket", "text"], ["stat2_num", "2. sayı", "text"], ["stat2_label", "2. etiket", "text"], ["stat3_num", "3. sayı", "text"], ["stat3_label", "3. etiket", "text"]]]]],
+  ["iletisim", "İletişim ve sosyal", [["İletişim ve harita", [["phone", "Telefon", "text"], ["email", "E-posta", "text"], ["hours", "Çalışma saatleri", "text"], ["address", "Adres", "area"], ["map_lat", "Enlem (Google Haritalar'da konuma sağ tıklayıp kopyalayın)", "text"], ["map_lng", "Boylam", "text"], ["whatsapp", "WhatsApp numarası (ülke koduyla, örn 905551112233)", "text"]]], ["Sosyal medya", [["facebook", "Facebook adresi (https://...)", "text"], ["instagram", "Instagram adresi (https://...)", "text"]]]]],
+  ["gelismis", "Gelişmiş", [["Gelişmiş", [["auto_contrast", "Otomatik okunabilirlik düzeltmesi", "select", [["0", "Kapalı — seçtiğim renkler aynen uygulansın"], ["1", "Açık — okunmayan yazı renkleri otomatik açılıp koyulaşsın"]]], ["custom_css", "Özel CSS (en son uygulanır, panel ayarlarının üstüne yazar)", "area"]]]]]
 ];
+const STYLE_KEYS = { false: "bg_style", true: "dark_bg_style" };
+
 const cell = (k, v) => v === true ? "✓" : v === false ? "–" : k === "created_at" ? new Date(v).toLocaleDateString("tr-TR") : k === "stock" ? (STOCK.find(s => s[0] === v) || ["", v ?? ""])[1] : esc(String(v ?? "").slice(0, 70));
 
 async function start() {
@@ -117,34 +115,77 @@ async function edit(row) {
   };
 }
 
+let stab = "genel";
 async function settingsView() {
   const { data } = await db.from("settings").select("*");
   const S = { ...B.DEF, ...Object.fromEntries((data || []).filter(r => r.value).map(r => [r.key, r.value])) };
-  const fld = ([k, l, ty, o]) => `<label>${l}${ty === "color" ? `<input type="color" name="${k}" value="${B.hex(S[k], B.hex(B.DEF[k], "#000000"))}">`
-    : ty === "range" ? `<input type="range" name="${k}" min="${o[0]}" max="${o[1]}" value="${S[k]}">`
+  const colorKeys = [false, true].flatMap(d => B.ROLES.map(r => B.key(r, d)));
+  // elle belirlenmiş renkler; diğerleri "otomatik" (başka renkten türetilir)
+  const custom = new Set(colorKeys.filter(k => B.hex(S[k], null)));
+    const fld = ([k, l, ty, o]) => `<label>${l}${ty === "range" ? `<input type="range" name="${k}" min="${o[0]}" max="${o[1]}" value="${S[k]}">`
     : ty === "select" ? `<select name="${k}">${o.map(([a, b]) => `<option value="${a}" ${a === String(S[k]) ? "selected" : ""}>${b}</option>`).join("")}</select>`
-    : ty === "area" ? `<textarea name="${k}" rows="3">${esc(S[k])}</textarea>`
+    : ty === "area" ? `<textarea name="${k}" rows="${k === "custom_css" ? 8 : 3}" ${k === "custom_css" ? 'spellcheck="false" placeholder=".pc h3 { letter-spacing: 0; }"' : ""}>${esc(S[k])}</textarea>`
     : ty === "image" ? `<input name="${k}" value="${esc(S[k])}" placeholder="Boşsa varsayılan logo"><input type="file" accept="image/*" data-up="${k}">`
     : `<input name="${k}" value="${esc(S[k])}">`}</label>`;
-  const grp = ([n, fs, rs, hint], gi) => `<fieldset><legend>${n}</legend>${hint ? `<p class="hint">${hint}</p>` : ""}${fs.map(fld).join("")}${rs ? `<button type="button" class="b s" data-reset="${gi}">Bu bölümü varsayılana döndür</button>` : ""}</fieldset>`;
-  $("#m").innerHTML = `<div class="row"><h2 style="margin:0">Site Ayarları</h2><button class="b" id="save">Kaydet</button></div><div class="split"><form id="sf">${G.map(grp).join("")}</form><aside class="pvbox"><h4 style="margin-top:0">Canlı önizleme</h4><div class="pvs">${[["pvl", "GÜNDÜZ MODU"], ["pvd", "GECE MODU"]].map(([id, t]) => `<div class="pvm" id="${id}"><span class="lb">${t}</span><div class="hero">AKÜ VE ELEKTRİK</div><div class="in"><h3></h3><p></p><div class="c"><i>Bakım</i><b>Lastik bakımı</b><span>Yazar: Ahmet Usta · 640 €</span></div><span class="bt">RANDEVU AL</span></div></div>`).join("")}</div><p class="hint">Renk, yazı tipi ve boyut değişimleri burada anında görünür. Kaydedince tüm sitede uygulanır.</p></aside></div>`;
-  const f = $("#sf"), pv = () => {
-    const v = { ...S, ...Object.fromEntries(new FormData(f)) };
-    B.loadFont(v.font_head); B.loadFont(v.font_hero); B.loadFont(v.font_body);
+  const crow = (r, dark) => { const k = B.key(r, dark); return `<div class="cr"><span class="cl">${B.ROLE_LABEL[r]}</span><div class="cw"><input type="color" name="${k}" data-color="${k}" data-role="${r}" data-dark="${dark ? 1 : 0}" aria-label="${B.ROLE_LABEL[r]}"><input class="hx" data-hex="${k}" maxlength="7" spellcheck="false" aria-label="Renk kodu"><span class="ct" data-ct="${k}"></span><button type="button" class="b i" data-auto="${k}" title="Otomatiğe / varsayılana döndür">↺</button></div></div>`; };
+  const modeBox = dark => `<fieldset><legend>${dark ? "Gece modu" : "Gündüz modu"}</legend>
+    <label>Arka plan türü<select name="${STYLE_KEYS[dark]}">${BGS.map(([a, b]) => `<option value="${a}" ${a === S[STYLE_KEYS[dark]] ? "selected" : ""}>${b}</option>`).join("")}</select></label>
+    ${B.ROLE_GROUPS.map(([n, rs]) => `<h5>${n}</h5><div class="pal">${rs.map(r => crow(r, dark)).join("")}</div>`).join("")}
+    <button type="button" class="b s" data-resetmode="${dark ? 1 : 0}">${dark ? "Gece" : "Gündüz"} paletini varsayılana döndür</button></fieldset>`;
+  const palette = `<p class="hint">Her renk için sol kutudan seçin ya da kod yazın (örn. <b>#ce0304</b>). <b>otomatik</b> yazan renkler başka bir renkten türetilir; elle değiştirdiğiniz an sabitlenir, ↺ ile geri dönersiniz. Soldaki sayı yazı ile zemin arasındaki kontrasttır (4.5 ve üstü rahat okunur).</p>
+    <fieldset><legend>Ortak</legend><label>Slider yazı rengi<span class="cw"><input type="color" name="color_hero" value="${B.hex(S.color_hero, "#ffffff")}"></span></label></fieldset>${modeBox(false)}${modeBox(true)}`;
+  $("#m").innerHTML = `<div class="row"><h2 style="margin:0">Site Ayarları</h2><button class="b" id="save">Kaydet</button></div>
+  <div class="tabs" role="tablist">${TABS.map(([id, t]) => `<button type="button" role="tab" data-tab="${id}" class="${id === stab ? "on" : ""}">${t}</button>`).join("")}</div>
+  <div class="split"><form id="sf">${TABS.map(([id, , gs]) => `<div class="tab" data-t="${id}" ${id === stab ? "" : "hidden"}>${id === "renk" ? palette : gs.map(([n, fs]) => `<fieldset><legend>${n}</legend>${fs.map(fld).join("")}</fieldset>`).join("")}</div>`).join("")}</form>
+  <aside class="pvbox"><h4 style="margin-top:0">Canlı önizleme</h4><div class="pvs">${[["pvl", "GÜNDÜZ MODU"], ["pvd", "GECE MODU"]].map(([id, t]) => `<div class="pvm" id="${id}"><span class="lb">${t}</span><div class="nv"><b>BBS AUTO</b><span>Hizmetler &nbsp; Ürünler</span></div><div class="hero">AKÜ VE ELEKTRİK</div><div class="hlb"><b>NELER YAPIYORUZ?</b><span class="bt2">RANDEVU AL</span></div><div class="in"><h3></h3><p></p><div class="c"><i>Kategori</i><b>Ürün adı</b><span>Kart açıklaması burada görünür.</span><strong>640 €</strong></div><span class="bt">BUTON</span></div><div class="ft">© BBS AUTO</div></div>`).join("")}</div><p class="hint">Değişiklikler burada anında görünür. Kaydedince tüm sitede uygulanır.</p></aside></div>`;
+
+  const f = $("#sf");
+  const vals = () => { const v = { ...S, ...Object.fromEntries(new FormData(f)) }; colorKeys.forEach(k => { if (!custom.has(k)) v[k] = ""; }); return v; };
+  const pv = () => {
+    const v = vals();
+    ["font_head", "font_card", "font_hero", "font_btn", "font_body"].forEach(k => B.loadFont(v[k]));
     [["pvl", false], ["pvd", true]].forEach(([id, dark]) => {
-      const el = $("#" + id);
+      const el = $("#" + id), c = B.resolve(v, dark);
       Object.entries({ ...B.sizeVars(v), ...B.colorVars(v, dark, false) }).forEach(([k, x]) => el.style.setProperty(k, x));
       el.querySelector("h3").textContent = v.sec_svc_title || v.site_title;
       el.querySelector("p").textContent = v.tagline;
+      // renk kutularını güncelle (özel olmayanlar türetilen değeri gösterir)
+      f.querySelectorAll(`[data-color][data-dark="${dark ? 1 : 0}"]`).forEach(inp => {
+        const r = inp.dataset.role, k = inp.dataset.color, val = c[r];
+        if (document.activeElement !== inp) inp.value = val;
+        const hx = f.querySelector(`[data-hex="${k}"]`); if (document.activeElement !== hx) hx.value = val;
+        const row = inp.closest(".cr"); row.classList.toggle("auto", !custom.has(k));
+        const ct = f.querySelector(`[data-ct="${k}"]`);
+        if (B.PAIRS[r]) { const q = B.ratio(c[r], c[B.PAIRS[r]]); ct.textContent = q.toFixed(1); ct.className = "ct " + (q >= 4.5 ? "ok" : q >= 3 ? "mid" : "bad"); ct.title = "Zemin: " + B.ROLE_LABEL[B.PAIRS[r]]; } else { ct.textContent = ""; ct.className = "ct"; }
+      });
     });
   };
-  f.addEventListener("input", pv); pv(); upload(f);
-  f.querySelectorAll("[data-reset]").forEach(b => b.onclick = () => {
-    G[b.dataset.reset][1].forEach(([k]) => { const el = f.elements[k]; if (el) el.value = B.DEF[k]; });
-    pv(); toast("Varsayılana döndü, Kaydet'e basın");
+  f.addEventListener("input", e => {
+    const t = e.target;
+    if (t.dataset.color) custom.add(t.dataset.color);
+    if (t.dataset.hex) {
+      const h = B.hex(t.value, null);
+      if (h) { const ci = f.querySelector(`[data-color="${t.dataset.hex}"]`); ci.value = h; custom.add(t.dataset.hex); }
+    }
+    pv();
   });
+  f.querySelectorAll("[data-auto]").forEach(b => b.onclick = () => { custom.delete(b.dataset.auto); pv(); });
+  f.querySelectorAll("[data-resetmode]").forEach(b => b.onclick = () => {
+    const d = b.dataset.resetmode === "1"; B.ROLES.forEach(r => custom.delete(B.key(r, d)));
+    f.elements[STYLE_KEYS[d]].value = "solid"; pv(); toast("Palet varsayılana döndü, Kaydet'e basın");
+  });
+  document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => {
+    stab = b.dataset.tab;
+    document.querySelectorAll("[data-tab]").forEach(x => x.classList.toggle("on", x === b));
+    f.querySelectorAll(".tab").forEach(t => t.hidden = t.dataset.t !== stab);
+  });
+  // kayıtlı renkleri kutulara yükle (yoksa tarayıcı #000000 ile başlatır ve kaydederken bozardı)
+  colorKeys.forEach(k => { if (custom.has(k)) { f.elements[k].value = S[k]; f.querySelector(`[data-hex="${k}"]`).value = S[k]; } });
+  pv(); upload(f);
   $("#save").onclick = async () => {
-    const v = Object.fromEntries(new FormData(f)), rows = G.flatMap(([, fs]) => fs).map(([k]) => ({ key: k, value: String(v[k] ?? "") }));
+    const v = Object.fromEntries(new FormData(f));
+    const rows = [...f.elements].filter(el => el.name).map(el => el.name).filter((k, i, a) => a.indexOf(k) === i)
+      .map(k => ({ key: k, value: colorKeys.includes(k) ? (custom.has(k) ? B.hex(v[k], "") : "") : String(v[k] ?? "") }));
     const { error } = await db.from("settings").upsert(rows);
     error ? alert(error.message) : toast("Ayarlar kaydedildi");
   };
