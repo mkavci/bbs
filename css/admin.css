@@ -68,3 +68,13 @@ fieldset .b.s{justify-self:start}
 .hint{font-weight:400;color:var(--mute);font-size:.8rem}
 #toast{position:fixed;right:1rem;bottom:1rem;background:#17191e;color:#fff;padding:.7rem 1.1rem;border-radius:6px;z-index:99}
 @media(max-width:860px){.pvbox{position:static;max-height:none}.shell{grid-template-columns:1fr}aside.sb{position:static;height:auto;display:flex;flex-wrap:wrap}.sb .logo{width:100%}.sb button,.sb a{width:auto}.split{grid-template-columns:1fr}main{padding:1rem}}
+
+svg.i{width:1.2rem;height:1.2rem;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block}
+.icrow{display:flex;gap:.6rem;align-items:center}.icrow select{flex:1}
+.icprev{width:2.4rem;height:2.4rem;flex:0 0 2.4rem;display:grid;place-items:center;border:1px solid var(--line);border-radius:4px;background:#fff;color:#17191e}
+.icprev img{width:1.4rem;height:1.4rem;object-fit:contain}
+.up-st{display:block;font-weight:400;font-size:.8rem;color:#1b6b34}.up-st.warn{color:#8a5a00}
+.pvm .nv b img{height:var(--logo-h);width:auto;max-width:110px;object-fit:contain;vertical-align:middle;margin-right:.4em}
+.pvm .c b{margin-bottom:var(--cgap)}
+fieldset .hint{margin:0}
+.pvm .nv{gap:.6em}.pvm .nv b{display:flex;align-items:center;min-width:0;white-space:nowrap}.pvm .nv span{white-space:nowrap}

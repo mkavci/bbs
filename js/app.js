@@ -9,14 +9,7 @@ const intS = (k, d, a, b) => { const v = parseInt(S[k], 10); return isFinite(v) 
 const dateTR = v => v ? new Date(v).toLocaleDateString("tr-TR") : "";
 const STK = { var: ["Stokta", "ok"], sinirli: ["Sınırlı stok", "mid"], yok: ["Tükendi", "no"] };
 
-// Simgeler (yazı karakteri yerine SVG: her cihazda görünür)
-const svg = p => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
-const IC = {
-  sun: svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
-  moon: svg('<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>'),
-  menu: svg('<path d="M4 6h16M4 12h16M4 18h16"/>'),
-  phone: svg('<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>')
-};
+const IC = { sun: B.icon("sun"), moon: B.icon("moon"), menu: B.icon("menu"), phone: B.icon("phone"), lock: B.icon("lock") };
 
 // Supabase bağlanana kadar görünen örnek veri
 const DEMO = {
@@ -25,21 +18,29 @@ const DEMO = {
   services: [["Yağ değişimi", "Motor yağı ve filtre değişimi, aracınıza uygun ürünlerle."], ["Motor tamiratı", "Arıza tespiti ve onarım; yapılan işi parça parça anlatırız."], ["Fren bakımı", "Balata, disk ve hidrolik kontrolü."], ["Lastik değişimi", "Mevsimlik değişim, rot ve balans ayarı."]].map(([title, description]) => ({ title, description })),
   products: [{ title: "Alaşım jant seti", category: "Jant", description: "16–19 inç alaşım jant seçenekleri.", price: 640, stock: "var", featured: true }, { title: "Ön tampon", category: "Kaporta", description: "Boyalı veya boyasız, birçok model.", stock: "sinirli" }, { title: "Fren balata seti", category: "Fren", description: "Ön ve arka takımlar.", price: 85, stock: "yok" }],
   posts: [{ title: "Lastiklerinizi daha uzun ömürlü kılmanın 4 yolu", category: "Bakım", excerpt: "Basınç, rotasyon ve doğru depolama ile lastik ömrünü uzatın.", body: "Basıncı ayda bir kontrol edin.\nLastikleri 10.000 km'de bir yer değiştirin.", created_at: new Date().toISOString() }],
-  pages: []
+  pages: [], socials: [], faq: [], brands: []
 };
 const get = async (t, q) => { if (!db) return DEMO[t]; const { data, error } = await q(db.from(t).select("*")); return error || !data ? DEMO[t] : data; };
 
-function chrome(menu) {
+function chrome(menu, soc) {
   const logo = safeUrl(S.logo_url) || "image/bbslogo.png", base = PG === "home" ? "" : "index.html";
   const tel = esc(S.phone).replace(/\s/g, "");
+  // sosyal medya: tablo boşsa eski Facebook/Instagram ayarlarına bak
+  const legacy = [["facebook", "Facebook"], ["instagram", "Instagram"]].filter(([k]) => B.socUrl(S[k])).map(([k, n]) => ({ name: n, url: S[k], icon: k }));
+  const socs = (soc && soc.length ? soc : legacy).filter(x => x.visible !== false && B.socUrl(x.url));
+  const sIcon = x => x.icon === "custom" && safeUrl(x.icon_url) ? `<img src="${safeUrl(x.icon_url)}" alt="">` : B.icon(x.icon);
+  const sLinks = l => l.map(x => `<a href="${esc(B.socUrl(x.url))}" ${/^https?:/i.test(x.url) ? 'target="_blank" rel="noopener"' : ""} aria-label="${esc(x.name)}" title="${esc(x.name)}">${sIcon(x)}</a>`).join("");
+  const inNav = socs.filter(x => x.in_nav !== false), inFoot = socs.filter(x => x.in_footer !== false);
+  // "auto": 3 veya daha az ikon menüde (gece/gündüz düğmesinin yanında), fazlası üst şeritte; telefonda menü yerine üst şerit
+  const place = S.social_place === "nav" || S.social_place === "top" ? S.social_place : inNav.length <= 3 ? "nav" : "top";
+  const noTitle = S.logo_title === "0";
   $("#hdr").innerHTML = `${S.announcement ? `<div class="ann">${esc(S.announcement)}</div>` : ""}
-  <div class="top"><div class="wrap">${S.phone ? `<a href="tel:${tel}">${esc(S.phone)}</a>` : ""}${S.email ? `<a href="mailto:${esc(S.email)}">${esc(S.email)}</a>` : ""}<span>${esc(S.hours)}</span></div></div>
-  <header class="nav" id="nav"><div class="wrap"><a class="brand" href="${base || "#"}"><img src="${logo}" alt="">${esc(S.site_title)}</a>
+  <div class="top"><div class="wrap">${S.phone ? `<a href="tel:${tel}">${esc(S.phone)}</a>` : ""}${S.email ? `<a href="mailto:${esc(S.email)}">${esc(S.email)}</a>` : ""}<span>${esc(S.hours)}</span>${inNav.length ? `<span class="soc-top ${place === "nav" ? "m-only" : ""}">${sLinks(inNav)}</span>` : ""}</div></div>
+  <header class="nav" id="nav"><div class="wrap"><a class="brand" href="${base || "#"}"><img src="${logo}" alt="${noTitle ? esc(S.site_title) : ""}">${noTitle ? "" : `<span>${esc(S.site_title)}</span>`}</a>
   <nav id="mainnav" aria-label="Ana menü"><ul>${menu.filter(m => m.visible !== false).map(m => `<li><a href="${/^#/.test(m.href) ? base + okHref(m.href) : okHref(m.href)}">${esc(m.label)}</a></li>`).join("")}</ul></nav>
-  <button class="icon-btn" id="themeBtn" type="button"></button><button class="icon-btn" id="menu" type="button" aria-label="Menü">${IC.menu}</button></div></header>`;
-  const soc = [["facebook", "Facebook"], ["instagram", "Instagram"]].filter(([k]) => safeUrl(S[k])).map(([k, n]) => `<a href="${safeUrl(S[k])}" target="_blank" rel="noopener">${n}</a>`).join("");
+  ${place === "nav" && inNav.length ? `<span class="soc-nav">${sLinks(inNav)}</span>` : ""}<button class="icon-btn" id="themeBtn" type="button"></button><button class="icon-btn" id="menu" type="button" aria-label="Menü">${IC.menu}</button></div></header>`;
   const wd = String(S.whatsapp).replace(/\D/g, "");
-  $("#ftr").innerHTML = `<footer><div class="wrap"><span>© ${new Date().getFullYear()} ${esc(S.site_title)} ${esc(S.footer_text)}</span><span class="soc">${soc}</span><a href="admin/">Yönetim</a></div></footer>${wd ? `<a class="wa" href="https://wa.me/${wd}" target="_blank" rel="noopener" aria-label="WhatsApp ile yazın">${IC.phone}</a>` : ""}`;
+  $("#ftr").innerHTML = `<footer><div class="wrap"><span>© ${new Date().getFullYear()} ${esc(S.site_title)} ${esc(S.footer_text)}</span><span class="soc">${sLinks(inFoot)}</span><a class="adm" href="admin/" aria-label="Yönetim" title="Yönetim">${IC.lock}</a></div></footer>${wd ? `<a class="wa" href="https://wa.me/${wd}" target="_blank" rel="noopener" aria-label="WhatsApp ile yazın">${IC.phone}</a>` : ""}`;
   // gece / gündüz düğmesi
   const tb = $("#themeBtn"), root = document.documentElement;
   const paint = () => {
@@ -120,11 +121,13 @@ function counters() {
 
 async function home() {
   const nS = intS("svc_limit", 6, 1, 50), nP = intS("prod_limit", 4, 1, 24), nN = intS("news_limit", 4, 1, 24);
-  const [sl, sv, pr, po] = await Promise.all([
+  const [sl, sv, pr, po, fq, br] = await Promise.all([
     get("slides", q => q.eq("active", true).order("sort")),
     get("services", q => q.order("sort")),
     get("products", q => q.eq("published", true).order("created_at", { ascending: false })),
-    get("posts", q => q.eq("published", true).order("created_at", { ascending: false }).limit(nN + 1))
+    get("posts", q => q.eq("published", true).order("created_at", { ascending: false }).limit(nN + 1)),
+    get("faq", q => q.eq("visible", true).order("sort")),
+    get("brands", q => q.eq("visible", true).order("sort"))
   ]);
   SV = sv; PR = pr; PO = po.slice(0, nN); slider(sl); fillSections();
   $("#hl-t").textContent = S.hl_title; $("#hl-p").textContent = S.hl_text;
@@ -141,6 +144,22 @@ async function home() {
   $("#prod-more").hidden = pr.length <= nP;
   $("#posts").innerHTML = PO.map((x, i) => postCard(x, i)).join("");
   $("#news-more").hidden = po.length <= nN;
+  // markalar ve sık sorulan sorular (boşsa veya panelden kapatıldıysa bölüm gizlenir)
+  const on = k => S["show_" + k] !== "0";
+  $("#neler").hidden = !on("hl"); $("#hizmetler").hidden = !on("svc"); $("#urunler").hidden = !on("prod"); $("#haberler").hidden = !on("news");
+  $("#markalar").hidden = !on("brands") || !br.length;
+  $("#brands").dataset.bg = S.brands_bg || "white";
+  $("#brands").innerHTML = br.map(x => {
+    const im = safeUrl(x.logo_url), inner = im ? `<img src="${im}" alt="${esc(x.name)}" loading="lazy">` : `<b>${esc(x.name)}</b>`, u = B.socUrl(x.url);
+    return `<li>${/^https?:/i.test(u) ? `<a href="${esc(u)}" target="_blank" rel="noopener" title="${esc(x.name)}">${inner}</a>` : `<div title="${esc(x.name)}">${inner}</div>`}</li>`;
+  }).join("");
+  $("#sss").hidden = !on("faq") || !fq.length;
+  $("#faq").innerHTML = fq.map(x => `<details class="fq"><summary>${esc(x.question)}</summary><div class="fa">${para(x.answer)}</div></details>`).join("");
+  if (fq.length && on("faq")) {
+    const ld = document.createElement("script"); ld.type = "application/ld+json";
+    ld.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: fq.map(x => ({ "@type": "Question", name: x.question, acceptedAnswer: { "@type": "Answer", text: x.answer || "" } })) });
+    document.head.appendChild(ld);
+  }
   // iletişim + harita
   const lat = parseFloat(S.map_lat), lng = parseFloat(S.map_lng), ok = S.map_lat !== "" && isFinite(lat) && isFinite(lng);
   $("#info").innerHTML = [["Telefon", S.phone], ["E-posta", S.email], ["Çalışma saatleri", S.hours], ["Adres", S.address]].filter(r => r[1]).map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("");
@@ -212,6 +231,7 @@ async function sayfa() {
   if (db) { const { data } = await db.from("settings").select("*"); (data || []).forEach(r => { if (r.value) S[r.key] = r.value; }); }
   B.applyTheme(S);
   if (PG === "home") document.title = S.site_title + " | " + S.tagline;
-  chrome(await get("menu", q => q.order("sort")));
+  const [menu, soc] = await Promise.all([get("menu", q => q.order("sort")), get("socials", q => q.eq("visible", true).order("sort"))]);
+  chrome(menu, soc);
   ({ home, urunler, sayfa, haberler, hizmetler })[PG]();
 })();
