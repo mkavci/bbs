@@ -2,15 +2,27 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>try{var th=localStorage.getItem("theme");document.documentElement.dataset.theme=th||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light")}catch(e){}</script>
 <title>BBS AUTO | Oto Servis</title>
 <meta name="description" content="Yağ değişimi, motor, fren, lastik ve akü servisi; yedek parça detay ve fiyat bilgisi.">
+<meta name="theme-color" content="#f4f5f7">
+<meta property="og:site_name" content="BBS AUTO">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:image" content="image/bbslogo.png">
 <link rel="icon" href="image/bbslogo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="css/style.css">
+<script>try{var c=localStorage.getItem("bbs_css");if(c){var s=document.createElement("style");s.id="bbs-theme";s.textContent=c;document.head.appendChild(s)}if(sessionStorage.getItem("bbs_splash"))document.documentElement.classList.add("no-splash")}catch(e){}</script>
+<noscript><style>#splash{display:none}</style></noscript>
 </head>
 <body data-page="home">
+<div id="splash" aria-hidden="true"><div class="sp-in"><img src="image/bbslogo.png" alt=""><i></i></div></div>
+<script>try{var l=localStorage.getItem("bbs_logo");if(l)document.querySelector("#splash img").src=l}catch(e){}</script>
+<a class="skip" href="#main">İçeriğe geç</a>
 <div id="hdr"></div>
-<main>
+<main id="main">
 <div id="slider" class="slider" aria-roledescription="carousel" aria-label="Öne çıkanlar"></div>
 
 <section id="neler" class="hl"><div class="wrap hl-in">
@@ -21,19 +33,19 @@
 <section id="hizmetler"><div class="wrap">
   <div class="head"><h2 data-set="sec_svc_title"></h2><p data-set="sec_svc_text"></p></div>
   <ul class="svc" id="services"></ul>
-  <div class="more"><a class="btn" id="svc-more" href="hizmetler.html">TÜM HİZMETLER</a></div>
+  <div class="more"><a class="btn ghost" id="svc-more" href="hizmetler.html">Tüm hizmetler</a></div>
 </div></section>
 
 <section id="urunler" class="alt"><div class="wrap">
   <div class="head"><h2 data-set="sec_prod_title"></h2><p data-set="sec_prod_text"></p></div>
   <div class="grid g4" id="products"></div>
-  <div class="more"><a class="btn" id="prod-more" href="urunler.html">TÜM ÜRÜNLERİ GÖR</a></div>
+  <div class="more"><a class="btn ghost" id="prod-more" href="urunler.html">Tüm ürünleri gör</a></div>
 </div></section>
 
 <section id="haberler"><div class="wrap">
   <div class="head"><h2 data-set="sec_news_title"></h2><p data-set="sec_news_text"></p></div>
   <div class="grid g4" id="posts"></div>
-  <div class="more"><a class="btn" id="news-more" href="haberler.html">TÜM HABERLER</a></div>
+  <div class="more"><a class="btn ghost" id="news-more" href="haberler.html">Tüm haberler</a></div>
 </div></section>
 
 <section id="markalar" class="alt"><div class="wrap">
@@ -46,16 +58,26 @@
   <div class="faq" id="faq"></div>
 </div></section>
 
-<section id="iletisim" class="alt" style="border-top:1px solid var(--line)"><div class="wrap contact">
+<section id="yorumlar" class="alt"><div class="wrap">
+  <div class="head"><h2 data-set="sec_rev_title"></h2><p data-set="sec_rev_text"></p></div>
+  <div class="rev" id="rev"></div>
+</div></section>
+
+<section id="iletisim"><div class="wrap contact">
   <div>
     <div class="head"><h2 data-set="sec_contact_title"></h2></div>
-    <form id="form">
-      <label>Ad Soyad<input name="name" required maxlength="80"></label>
-      <label>Telefon<input name="phone" type="tel" maxlength="30"></label>
-      <label>E-posta<input name="email" type="email" maxlength="100"></label>
-      <label>Mesajınız<textarea name="message" required maxlength="1000"></textarea></label>
-      <button class="btn" type="submit">GÖNDER</button>
-      <p class="msg" id="msg" role="status"></p>
+    <form id="form" novalidate>
+      <label>Ad soyad<input name="name" required maxlength="80" autocomplete="name"></label>
+      <div class="two">
+        <label>Telefon<input name="phone" type="tel" maxlength="30" autocomplete="tel" inputmode="tel"></label>
+        <label>E-posta<input name="email" type="email" maxlength="100" autocomplete="email"></label>
+      </div>
+      <label><span>Konu <span class="opt">(isteğe bağlı)</span></span><select id="topic"><option value="">Seçin</option></select></label>
+      <label>Mesajınız<textarea name="message" required maxlength="1000" rows="4"></textarea></label>
+      <label class="chk" id="consent-box"><input type="checkbox" name="consent"><span id="consent-txt"></span></label>
+      <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <button class="btn" type="submit">Mesajı gönder</button>
+      <p class="msg" id="msg" role="status" aria-live="polite"></p>
     </form>
   </div>
   <div>
@@ -66,9 +88,12 @@
 </div></section>
 </main>
 <div id="ftr"></div>
-<dialog id="dlg"></dialog>
+<dialog id="dlg" aria-label="Detay"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<noscript><p style="padding:1rem;text-align:center">Bu sayfanın çalışması için JavaScript gerekir.</p></noscript>
 <script src="js/config.js"></script>
 <script src="js/common.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

@@ -4,21 +4,26 @@ window.BBS = (() => {
 
   const DEF = {
     site_title: "BBS AUTO", tagline: "Oto servis ve yedek parça", logo_url: "", footer_text: "", announcement: "", currency: "€",
-    logo_height: "36", logo_title: "1", social_place: "auto", card_gap: "8", sec_gap: "100",
+    logo_height: "36", logo_title: "1", social_place: "auto", card_gap: "8", sec_gap: "100", radius: "10", meta_desc: "", show_mbar: "1", news_detail: "button",
     show_hl: "1", show_svc: "1", show_prod: "1", show_news: "1", show_brands: "1", show_faq: "1", brands_bg: "white",
     sec_brands_title: "Hizmet Verdiğimiz Markalar", sec_brands_text: "Bu markaların servis ve yedek parça işlerini yapıyoruz.",
     sec_faq_title: "Sık Sorulan Sorular", sec_faq_text: "Aklınıza takılanların cevapları burada.",
     color_hero: "#ffffff", bg_style: "solid", dark_bg_style: "solid", auto_contrast: "0", custom_css: "",
-    font_head: "Arial Narrow", font_card: "Arial Narrow", font_hero: "Arial Narrow", font_btn: "Arial Narrow", font_body: "system-ui", font_size: "16", head_size: "100",
+    font_head: "Space Grotesk", font_card: "Space Grotesk", font_hero: "Space Grotesk", font_btn: "Space Grotesk", font_body: "Plus Jakarta Sans", font_size: "16", head_size: "100",
     svc_limit: "6", prod_limit: "4", news_limit: "4",
     sec_svc_title: "Hizmetlerimiz", sec_svc_text: "Atölyede en çok yaptığımız işler.",
     sec_prod_title: "Öne Çıkan Ürünler", sec_prod_text: "Detay, fiyat ve stok durumu. Satış mağazada, sipariş için arayın.",
     sec_news_title: "Haberler & Blog", sec_news_text: "Aracınızın ömrünü uzatan pratik bilgiler.",
     sec_contact_title: "Randevu / Mesaj", sec_find_title: "Bizi bulun",
     hl_title: "Neler yapıyoruz?", hl_text: "Yağ değişiminden motor onarımına, fren, lastik ve akü servisine kadar aracınızın ihtiyacı olan her işi tek çatı altında yapıyoruz. Önce arızayı gösterir, sonra onarırız.",
-    hl_btn_text: "RANDEVU AL", hl_btn_link: "#iletisim",
+    hl_btn_text: "Randevu al", hl_btn_link: "#iletisim",
     stat1_num: "10+", stat1_label: "yıllık tecrübe", stat2_num: "5000+", stat2_label: "servis edilen araç", stat3_num: "100%", stat3_label: "şeffaf fiyat",
-    phone: "", email: "", hours: "", address: "", map_lat: "", map_lng: "", whatsapp: "", facebook: "", instagram: ""
+    phone: "", email: "", hours: "", address: "", map_lat: "", map_lng: "", whatsapp: "", facebook: "", instagram: "",
+    lang_main: "tr", langs: "", lang_switcher: "1", share_pages: "1", visit_counter: "1",
+    legal_name: "", legal_tax: "", legal_email: "", legal_updated: "", require_consent: "1", cookie_notice: "1",
+    consent_label: "{link}'ni okudum, anladım.", review_consent_label: "Adımın ve yorumumun sitede yayınlanmasını kabul ediyorum; {link}'ni okudum.", kvkk_link_text: "KVKK Aydınlatma Metni",
+    cookie_text: "Bu sitede reklam veya takip çerezi kullanılmaz; yalnızca tema ve dil tercihinizi hatırlayan zorunlu depolama vardır.",
+    show_reviews: "1", reviews_open: "1", reviews_limit: "6", google_review_url: "", sec_rev_title: "Müşteri Yorumları", sec_rev_text: "Hizmet alan müşterilerimizin görüşleri."
   };
 
   // ---- RENK ROLLERİ ----
@@ -42,8 +47,8 @@ window.BBS = (() => {
   // yazı rolü -> üzerinde durduğu zemin rolü (kontrast ölçümü için)
   const PAIRS = { text: "bg", mute: "bg", heading: "bg", ctext: "card", cmute: "card", cheading: "card", ccat: "card", cprice: "card", accent: "bg", onprimary: "primary", hl_text: "hl_bg", nav_text: "nav_bg", top_text: "top_bg", foot_text: "foot_bg" };
   const BASE = {
-    light: { bg: "#f3f2ef", bg2: "#e2ded6", card: "#ffffff", text: "#17191e", heading: "#17191e", primary: "#ce0304", onprimary: "#ffffff", top_bg: "#17191e", top_text: "#f1efeb", foot_bg: "#17191e", foot_text: "#f1efeb" },
-    dark: { bg: "#14161a", bg2: "#1d2026", card: "#1c1f25", text: "#f1efeb", heading: "#ffffff", primary: "#ce0304", onprimary: "#ffffff", top_bg: "#0c0d10", top_text: "#f1efeb", foot_bg: "#0c0d10", foot_text: "#f1efeb" }
+    light: { bg: "#f4f5f7", bg2: "#e4e7ec", card: "#ffffff", text: "#15181e", heading: "#0d1015", primary: "#d4141b", onprimary: "#ffffff", top_bg: "#0d1015", top_text: "#e9ecf1", foot_bg: "#0d1015", foot_text: "#e9ecf1" },
+    dark: { bg: "#0f1115", bg2: "#171a21", card: "#171a20", text: "#e9ecf1", heading: "#ffffff", primary: "#d4141b", onprimary: "#ffffff", top_bg: "#090a0d", top_text: "#e9ecf1", foot_bg: "#090a0d", foot_text: "#e9ecf1" }
   };
   const key = (r, dark) => (dark ? "dark_" : "") + "color_" + r;
 
@@ -78,7 +83,8 @@ window.BBS = (() => {
     c.ctext = own("ctext") || c.text;
     c.cmute = own("cmute") || mix(c.ctext, c.card, .38);
     c.cheading = own("cheading") || c.heading;
-    c.ccat = own("ccat") || c.primary; c.cprice = own("cprice") || c.primary; c.accent = own("accent") || c.primary;
+    const lift = dark ? mix(c.primary, "#ffffff", .22) : c.primary;
+    c.ccat = own("ccat") || lift; c.cprice = own("cprice") || lift; c.accent = own("accent") || lift;
     c.hl_bg = own("hl_bg") || c.primary; c.hl_text = own("hl_text") || c.onprimary;
     c.nav_bg = own("nav_bg") || c.bg; c.nav_text = own("nav_text") || c.text;
     if (s.auto_contrast === "1") Object.entries(PAIRS).forEach(([f, b]) => { c[f] = tone(c[f], c[b], 4.5); });
@@ -89,7 +95,7 @@ window.BBS = (() => {
     f = /^[\w ]{2,40}$/.test(f || "") ? f : "system-ui";
     if (f === "system-ui") return "system-ui,'Segoe UI',Roboto,Arial,sans-serif";
     if (f === "Arial Narrow") return "'Arial Narrow','Barlow Condensed','Liberation Sans Narrow',Arial,sans-serif";
-    return `'${f}',sans-serif`;
+    return `'${f}',system-ui,'Segoe UI',Arial,sans-serif`;
   };
   const bgCSS = (c, style, fx) => style === "linear" ? `linear-gradient(160deg,${c.bg},${c.bg2})` : style === "radial" ? `radial-gradient(ellipse at 50% 0%,${c.bg2} 0%,${c.bg} 72%)${fx ? " fixed" : ""}` : c.bg;
 
@@ -107,12 +113,12 @@ window.BBS = (() => {
   const sizeVars = s => ({
     "--fh": stack(s.font_head), "--fc": stack(s.font_card || s.font_head), "--fhero": stack(s.font_hero || s.font_head), "--fbtn": stack(s.font_btn || s.font_head), "--fb": stack(s.font_body),
     "--fs": num(s.font_size, 16, 12, 24), "--hs": num(s.head_size, 100, 50, 200) / 100,
-    "--cgap": num(s.card_gap, 8, 0, 40) + "px", "--sg": num(s.sec_gap, 100, 40, 200) / 100, "--logo-h": num(s.logo_height, 36, 20, 80) + "px",
+    "--r": num(s.radius, 10, 0, 28) + "px", "--cgap": num(s.card_gap, 8, 0, 40) + "px", "--sg": num(s.sec_gap, 100, 40, 200) / 100, "--logo-h": num(s.logo_height, 36, 20, 80) + "px",
     "--hero": hex(s.color_hero, DEF.color_hero)
   });
   const cssText = o => Object.entries(o).map(([k, v]) => k + ":" + v).join(";");
 
-  const GF = ["Barlow Condensed", "Oswald", "Rajdhani", "Bebas Neue", "Montserrat", "Poppins", "Roboto", "Playfair Display"];
+  const GF = ["Space Grotesk", "Plus Jakarta Sans", "Manrope", "Sora", "DM Sans", "Barlow Condensed", "Oswald", "Rajdhani", "Bebas Neue", "Montserrat", "Poppins", "Roboto", "Playfair Display"];
   const SYS = ["Arial Narrow", "Arial", "Georgia", "Impact", "Trebuchet MS", "Verdana", "system-ui"];
   const FONTS = [...SYS, ...GF].map(f => [f, f === "system-ui" ? "Sistem yazı tipi" : f]);
   const loadFont = f => {
@@ -162,17 +168,70 @@ window.BBS = (() => {
     lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
     moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
-    menu: '<path d="M4 6h16M4 12h16M4 18h16"/>'
+    menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+    drop: '<path d="M12 2.7s6 6.3 6 10.6a6 6 0 0 1-12 0C6 9 12 2.7 12 2.7z"/>',
+    wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+    engine: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9L7 7M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
+    disc: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',
+    tire: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.5"/>',
+    battery: '<rect x="2" y="7" width="16" height="10" rx="2"/><path d="M22 11v2M7 12h4M9 10v4"/>',
+    bolt: '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>',
+    snow: '<path d="M12 2v20M4.9 7l14.2 10M19.1 7L4.9 17"/>',
+    wind: '<path d="M3 8h11a3 3 0 1 0-3-3M3 12h16a3 3 0 1 1-3 3M3 16h7"/>',
+    shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
+    car: '<path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M5 12h14"/>',
+    search: '<circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/>',
+    arrow: '<path d="M5 12h14M12 5l7 7-7 7"/>',
+    close: '<path d="M18 6L6 18M6 6l12 12"/>',
+    share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>',
+    up: '<path d="M12 19V5M5 12l7-7 7 7"/>',
+    check: '<path d="M20 6L9 17l-5-5"/>',
+    clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+    route: '<path d="M3 11l19-9-9 19-2-8-8-2z"/>',
+    user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'
   };
   const icon = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ICONS.link}</svg>`;
   const ICON_LIST = [["facebook", "Facebook"], ["instagram", "Instagram"], ["x", "X (Twitter)"], ["youtube", "YouTube"], ["tiktok", "TikTok"], ["whatsapp", "WhatsApp"], ["telegram", "Telegram"], ["linkedin", "LinkedIn"], ["pinterest", "Pinterest"], ["snapchat", "Snapchat"], ["twitch", "Twitch"], ["discord", "Discord"], ["spotify", "Spotify"], ["threads", "Threads"], ["mail", "E-posta"], ["phone", "Telefon"], ["globe", "Web sitesi"], ["pin", "Konum"], ["link", "Genel bağlantı"], ["custom", "Kendi görselim (yükle)"]];
   // sosyal medya bağlantısı: yalnızca http(s), mailto, tel
   const socUrl = u => /^(https?:\/\/|mailto:|tel:)[^\s'"<>\\]+$/i.test(u || "") ? u : "";
 
+
+  // ---- ZENGİN İÇERİK: panelden girilen HTML'i güvenli hale getirir (yalnızca izin verilen etiketler) ----
+  const OK_TAGS = new Set("p br strong b em i u s h2 h3 h4 ul ol li blockquote a img hr table thead tbody tr th td figure figcaption div span".split(" "));
+  const DROP = new Set("script style iframe object embed link meta form input button textarea select svg math noscript template".split(" "));
+  const okUrl = (u, img) => { u = String(u || "").trim(); return img ? (/^https?:\/\/[^\s'"<>\\]+$/i.test(u) ? u : "") : (/^(https?:\/\/|mailto:|tel:|#|(?!\/\/)[\w\-./?=%&#]+$)/i.test(u) ? u : ""); };
+  const clean = html => {
+    const doc = new DOMParser().parseFromString("<body>" + String(html || "") + "</body>", "text/html");
+    const walk = node => {
+      [...node.childNodes].forEach(n => {
+        if (n.nodeType === 3) return;
+        if (n.nodeType !== 1) return n.remove();
+        const t = n.tagName.toLowerCase();
+        if (DROP.has(t)) return n.remove();
+        walk(n);
+        if (!OK_TAGS.has(t)) { n.replaceWith(...n.childNodes); return; }
+        const keep = {};
+        if (t === "a") { const h = okUrl(n.getAttribute("href")); if (h) keep.href = h; if (/^https?:/i.test(h)) { keep.target = "_blank"; keep.rel = "noopener noreferrer"; } }
+        if (t === "img") { const u = okUrl(n.getAttribute("src"), true); if (!u) return n.remove(); keep.src = u; keep.alt = n.getAttribute("alt") || ""; keep.loading = "lazy"; }
+        if (t === "td" || t === "th") ["colspan", "rowspan"].forEach(a => { if (/^\d{1,2}$/.test(n.getAttribute(a) || "")) keep[a] = n.getAttribute(a); });
+        const al = (n.getAttribute("style") || "").match(/text-align\s*:\s*(left|center|right|justify)/i); if (al) keep.style = "text-align:" + al[1].toLowerCase();
+        [...n.attributes].forEach(a => n.removeAttribute(a.name));
+        Object.entries(keep).forEach(([k, v]) => n.setAttribute(k, v));
+      });
+    };
+    walk(doc.body);
+    return doc.body.innerHTML.trim();
+  };
+  const isHtml = t => /<\/?[a-z][\s\S]*>/i.test(String(t || ""));
+  const plainHtml = t => esc(t).split(/\n+/).filter(Boolean).map(p => `<p>${p}</p>`).join("");
+  // düz yazı ya da HTML, hangisi kayıtlıysa güvenli HTML döndürür
+  const rich = t => isHtml(t) ? clean(t) : plainHtml(t);
+  const textOf = t => isHtml(t) ? (new DOMParser().parseFromString(clean(t), "text/html").body.textContent || "").replace(/\s+/g, " ").trim() : String(t || "").replace(/\s+/g, " ").trim();
+
   const loadLib = () => new Promise((ok, no) => {
     if (window.supabase) return ok();
     const s = document.createElement("script"); s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";
     s.onload = ok; s.onerror = no; document.head.appendChild(s);
   });
-  return { esc, DEF, FONTS, ICONS, icon, ICON_LIST, socUrl, hex, num, stack, ratio, resolve, key, ROLES, ROLE_GROUPS, ROLE_LABEL, PAIRS, colorVars, sizeVars, loadFont, applyTheme, loadLib };
+  return { clean, rich, isHtml, textOf, esc, DEF, FONTS, ICONS, icon, ICON_LIST, socUrl, hex, num, stack, ratio, resolve, key, ROLES, ROLE_GROUPS, ROLE_LABEL, PAIRS, colorVars, sizeVars, loadFont, applyTheme, loadLib };
 })();
